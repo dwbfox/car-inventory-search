@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from re import search
 from urllib.parse import urlsplit
 
 import pandas as pd
@@ -49,27 +50,32 @@ class DealerInventory:
             ) from err
         for item in self.dealer_inventory:
             vehicle = {}
-            vehicle['Model'] = item['model']
-            # Get detailed pricing breakdown
-            vehicle['MSRP'] = (
-                [ i['value'] for i in item['pricing']['dPrice'] if i['label'].lower().startswith('msrp') ]
-            )
-            vehicle['Retail Price'] = item['pricing']['retailPrice']
-            vehicle['Markup (Addendum)'] = (
-                [ i["value"] for i in  item['pricing']['dPrice']  if i["label"].lower() == "addendum" ]
-            )
-            # Get detailed vehicle attributes
-            vehicle['Stock Status'] = (
-                [ i["labeledValue"] for i in item['attributes'] if "vehiclestatus" in i["name"].lower() ]
-            )
-            vehicle['Stock Number'] = (
-                [ i["value"] for i in item['attributes'] if i["name"].lower() == "stocknumber" ]
-            )
-            vehicle['VIN'] = (
-                [ i["value"] for i in  item['attributes'] if i["name"].lower() == "vin" ]
-            )    
-            vehicle['url'] = f"{self.dealer_url.scheme}://{self.dealer_url.netloc}{item['link']}"
-            self.vehicles.append(vehicle)
+            try:
+                vehicle['Model'] = item['model']
+                # Get detailed pricing breakdown
+                vehicle['MSRP'] = (
+                    [ i['value'] for i in item['pricing']['dPrice'] if i['label'].lower().startswith('msrp') ]
+                )
+                vehicle['Retail Price'] = [ item['pricing']['retailPrice'] if 'retailPrice' in item['pricing'] else 'Unknown' ]
+                vehicle['Markup'] = (
+                    [ i["value"] for i in  item['pricing']['dPrice']  if  search('.*option|installed|addendum|markup|fee.*', i["label"].lower()) ]
+                )
+                # Get detailed vehicle attributes
+                vehicle['Stock Status'] = (
+                    [ i["labeledValue"] for i in item['attributes'] if "vehiclestatus" in i["name"].lower() ]
+                )
+                vehicle['Stock Number'] = (
+                    [ i["value"] for i in item['attributes'] if i["name"].lower() == "stocknumber" ]
+                )
+                vehicle['VIN'] = (
+                    [ i["value"] for i in  item['attributes'] if i["name"].lower() == "vin" ]
+                )    
+                vehicle['url'] = f"{self.dealer_url.scheme}://{self.dealer_url.netloc}{item['link']}"
+                self.vehicles.append(vehicle)
+            except KeyError:
+                # Assume no pricing data available
+                continue
+
         self.data_frame = pd.DataFrame(self.vehicles)
         self.data_frame.sort_values(by='Retail Price', ascending=True)
 
