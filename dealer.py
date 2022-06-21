@@ -60,7 +60,7 @@ class DealerInventory:
             )
             # Get detailed vehicle attributes
             vehicle['Stock Status'] = (
-                [ i["labeledValue"] for i in item['attributes'] if "msrp" in i["name"].lower() ]
+                [ i["labeledValue"] for i in item['attributes'] if "vehiclestatus" in i["name"].lower() ]
             )
             vehicle['Stock Number'] = (
                 [ i["value"] for i in item['attributes'] if i["name"].lower() == "stocknumber" ]
