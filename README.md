@@ -1,7 +1,8 @@
-## car-inventory-check
+# car-inventory-search
 
 A small utility that gets publicly available inventory information from a provided car dealer URL
-and provides a formatted table to ease car searching.
+and provides a formatted table to ease car searching. It' currently limited to certain dealer inventory platforms,
+so your mileage may vary when on the functionality of the script. May expand it to more dealer platforms in the future.
 
 ---
 
@@ -14,7 +15,11 @@ pip install -r requirements.txt
 
 ### Run
 ```bash
-./main.py --dealer_url https://www.toyotaofgrapevine.com/
+./main.py --dealer_url https://www.toyotaofgrapevine.com
+```
+
+### Output:
+```
                 Model       MSRP Retail Price Markup (Addendum)      Stock Status Stock Number VIN                                                                                                              url
 0             Corolla  [$22,936]      $22,936                []  [DEALER ORDERED]           []  []            https://www.toyotaofgrapevine.com/new/Toyota/2022-Toyota-Corolla-82d2f86a0a0e0a9406d5b3e591208b9c.htm
 1             Corolla  [$22,936]      $22,936                []  [DEALER ORDERED]           []  []            https://www.toyotaofgrapevine.com/new/Toyota/2022-Toyota-Corolla-82d3083a0a0e0a9406d5b3e50631263d.htm
