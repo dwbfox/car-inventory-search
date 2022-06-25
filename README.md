@@ -15,7 +15,7 @@ pip install -r requirements.txt
 
 ### Run
 ```bash
-./main.py --dealer_url https://www.toyotaofgrapevine.com
+./main.py --dealer_url https://www.toyotaofgrapevine.com --condition new
 ```
 
 ### Output:
@@ -32,10 +32,17 @@ pip install -r requirements.txt
 
 ### Options
 ```
+usage: main.py [-h] --dealer_url dealer_url [--sort SORT] [--output {csv,json,table}] [--condition {new,used}]
+
+dealer-inventory-check - Get dealer inventory listing and prices without the hassle.
+
+options:
   -h, --help            show this help message and exit
   --dealer_url dealer_url
                         URL to the dealership homepage.
   --sort SORT           Sort the output table by a column
   --output {csv,json,table}
                         Format of the output, either csv, json, or table.
+  --condition {new,used}
+                        Condition of the vehicles, new or used.
 ```
