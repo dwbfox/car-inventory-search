@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+'''Dealer class facilitating parsing 
+of inventory information'''
 
 from re import search
 from urllib.parse import urlsplit
@@ -9,6 +11,7 @@ from requests import get, JSONDecodeError
 
 class DealerInventoryExeption(Exception):
     '''DealerInventoryExeption exception'''
+
 
 class DealerInventory:
     ''' Provides mechanisms to interact with some front-end
@@ -28,7 +31,6 @@ class DealerInventory:
         self.api_url = f"{self.dealer_url.scheme}://{self.dealer_url.netloc}{self.endpoint}"
         print('API: ' + self.api_url)
         self.parse_dealer_inventory()
-
 
     def parse_dealer_inventory(self):
         '''Fetches a JSON string from provided dealer website and parses it 
@@ -54,23 +56,29 @@ class DealerInventory:
                 vehicle['Model'] = item['model']
                 # Get detailed pricing breakdown
                 vehicle['MSRP'] = (
-                    [ i['value'] for i in item['pricing']['dPrice'] if i['label'].lower().startswith('msrp') ]
+                    [i['value'] for i in item['pricing']['dPrice']
+                        if i['label'].lower().startswith('msrp')]
                 )
-                vehicle['Retail Price'] = [ item['pricing']['retailPrice'] if 'pricing' in item and 'retailPrice' in item['pricing'] else [] ]
+                vehicle['Retail Price'] = [item['pricing']['retailPrice'] if 'pricing' in item
+                                           and 'retailPrice' in item['pricing'] else []]
                 vehicle['Markup'] = (
-                    [ i["value"] for i in  item['pricing']['dPrice']  if  search('.*option|installed|addendum|markup|fee.*', i["label"].lower()) ]
+                    [i["value"] for i in item['pricing']['dPrice']
+                     if search('.*option|installed|addendum|markup|fee.*', i["label"].lower())]
                 )
                 # Get detailed vehicle attributes
                 vehicle['Stock Status'] = (
-                    [ i["labeledValue"] for i in item['attributes'] if "vehiclestatus" in i["name"].lower() ]
+                    [i["labeledValue"] for i in item['attributes']
+                     if "vehiclestatus" in i["name"].lower()]
                 )
                 print(vehicle)
                 vehicle['Stock Number'] = (
-                    [ i["value"] for i in item['attributes'] if i["name"].lower() == "stocknumber" ]
+                    [i["value"] for i in item['attributes']
+                        if i["name"].lower() == "stocknumber"]
                 )
                 vehicle['VIN'] = (
-                    [ i["value"] for i in  item['attributes'] if i["name"].lower() == "vin" ]
-                )    
+                    [i["value"] for i in item['attributes']
+                     if i["name"].lower() == "vin"]
+                )
                 vehicle['url'] = f"{self.dealer_url.scheme}://{self.dealer_url.netloc}{item['link']}"
                 self.vehicles.append(vehicle)
             except KeyError:
@@ -78,13 +86,13 @@ class DealerInventory:
                 continue
 
         self.data_frame = pd.DataFrame(self.vehicles)
-        #self.data_frame.sort_values()
+        # self.data_frame.sort_values()
 
     def gen_json(self):
         '''Returns a JSON string with the full 
         dealer inventory structure'''
         return self.dealer_inventory
- 
+
     def gen_csv(self, file_name: str):
         '''Generates a CSV file with fetched inventory
         information to the specified file name'''
