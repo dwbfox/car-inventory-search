@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-'''Dealer class facilitating parsing 
+'''Dealer class facilitating parsing
 of inventory information'''
 
 from re import search
@@ -15,7 +15,7 @@ class DealerInventoryExeption(Exception):
 
 class DealerInventory:
     ''' Provides mechanisms to interact with some front-end
-        JSON objects provided _publicly_ by dealer websites to 
+        JSON objects provided _publicly_ by dealer websites to
         centralize the information already available on dealer sites.
     '''
 
@@ -26,14 +26,15 @@ class DealerInventory:
         self.data_frame = None
         self.dealer_url = urlsplit(query['dealer_url'])
         self.endpoint = (
-            f"/apis/widget/INVENTORY_LISTING_DEFAULT_AUTO_{query['condition']}:inventory-data-bus1/getInventory"
+            (f"/apis/widget/INVENTORY_LISTING_DEFAULT_AUTO_{query['condition']}"
+             ":inventory-data-bus1/getInventory")
         )
         self.api_url = f"{self.dealer_url.scheme}://{self.dealer_url.netloc}{self.endpoint}"
         print('API: ' + self.api_url)
         self.parse_dealer_inventory()
 
     def parse_dealer_inventory(self):
-        '''Fetches a JSON string from provided dealer website and parses it 
+        '''Fetches a JSON string from provided dealer website and parses it
         for easier consumption'''
         res = get(self.api_url)
         if res.status_code != 200:
@@ -79,7 +80,8 @@ class DealerInventory:
                     [i["value"] for i in item['attributes']
                      if i["name"].lower() == "vin"]
                 )
-                vehicle['url'] = f"{self.dealer_url.scheme}://{self.dealer_url.netloc}{item['link']}"
+                vehicle['url'] = (f"{self.dealer_url.scheme}://"
+                                  "{self.dealer_url.netloc}{item['link']}")
                 self.vehicles.append(vehicle)
             except KeyError:
                 # Assume no pricing data available
@@ -89,7 +91,7 @@ class DealerInventory:
         # self.data_frame.sort_values()
 
     def gen_json(self):
-        '''Returns a JSON string with the full 
+        '''Returns a JSON string with the full
         dealer inventory structure'''
         return self.dealer_inventory
 
@@ -98,7 +100,7 @@ class DealerInventory:
         information to the specified file name'''
         return self.data_frame.to_csv(file_name)
 
-    def gen_table(self, sort_column='Retail Price', ascending=True):
+    def gen_table(self):
         '''Generates a formatted table output for direct
         consumption on the terminal'''
         return self.data_frame.from_dict(self.vehicles)

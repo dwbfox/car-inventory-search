@@ -5,11 +5,12 @@ import argparse
 
 from dealer import DealerInventory
 
+
 def main():
     '''Main App entry point'''
     parser = argparse.ArgumentParser(
-        description='dealer-inventory-check - ' \
-            'Get dealer inventory listing and prices without the hassle.'
+        description='dealer-inventory-check - '
+        'Get dealer inventory listing and prices without the hassle.'
     )
     parser.add_argument('--dealer_url', required=True, metavar='dealer_url', type=str,
                         help='URL to the dealership homepage.')
@@ -34,6 +35,7 @@ def main():
         dealer.gen_csv(file_name)
     elif args.output == 'table':
         print(dealer.gen_table())
+
 
 if __name__ == '__main__':
     main()
